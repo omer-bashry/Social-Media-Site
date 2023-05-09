@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="node_modules/axios/dist/axios.min.js"></script>
+    <!-- import bootstrap -->
+    <script src="./node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="./node_modules/bootstrap/dist/css/bootstrap.min.css"
+    />
+    <!-- import css file  -->
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body style="background-color: #f0ecff">
+    <!-- Start Alerts -->
+    <div
+      id="SuccessAlertDiv"
+      class="m-auto w-75 w-md-50 position-relative"
+      style="z-index: 9999"
+    ></div>
+    <!-- End Alerts -->
+    <!-- start modals -->
+    <!-- start login modal -->
+    <div
+      class="modal fade"
+      id="login-model"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Login</h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="mb-3">
+                <label for="recipient-name" class="col-form-label"
+                  >Username:</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="usaername-input"
+                  value="bashry"
+                />
+              </div>
+              <div class="mb-3">
+                <label for="message-text" class="col-form-label"
+                  >Password:</label
+                >
+                <input
+                  type="password"
+                  class="form-control"
+                  id="password-input"
+                  value="123456"
+                />
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick="loginClicked()"
+              id="loginBtn"
+            >
+              Login
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- end login modal -->
+    <!-- start register modal -->
+    <div
+      class="modal fade"
+      id="rigester-model"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Rigester</h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="mb-3">
+                <label for="recipient-name" class="col-form-label"
+                  >Username:</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="rigester-usaername-input"
+                />
+              </div>
+              <div class="mb-3">
+                <label for="recipient-name" class="col-form-label">Name:</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="rigester-name-input"
+                />
+              </div>
+              <div class="mb-3">
+                <label for="message-text" class="col-form-label"
+                  >Password:</label
+                >
+                <input
+                  type="password"
+                  class="form-control"
+                  id="rigester-password-input"
+                />
+              </div>
+              <div class="mb-3">
+                <label for="message-text" class="col-form-label"
+                  >Profile Image:</label
+                >
+                <input
+                  type="file"
+                  class="form-control"
+                  id="rigester-image-input"
+                />
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick="rigesterClicked()"
+              id="loginBtn"
+            >
+              Rigester
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- end rigester modal -->
+    <!-- start create post model  -->
+    <div
+      class="modal fade"
+      id="add-post-model"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">
+              Create A New Post
+            </h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="mb-3">
+                <label for="recipient-name" class="col-form-label"
+                  >Title:</label
+                >
+                <input type="text" class="form-control" id="post-title-input" />
+              </div>
+              <div class="mb-3">
+                <label for="message-text" class="col-form-label">Body:</label>
+                <textarea
+                  class="form-control"
+                  id="post-body-input"
+                  style="width: 100%; height: 80px; resize: none"
+                ></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="recipient-name" class="col-form-label"
+                  >Image:</label
+                >
+                <input type="file" class="form-control" id="post-image-input" />
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick="CreataePostClicked()"
+              id="loginBtn"
+            >
+              Create
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- end create post model  -->
+    <!-- end modals -->
+    <!-- start nav bar -->
+    <div class="container">
+      <div class="d-flex justify-content-center align-items-center">
+        <div class="col-10">
+          <nav
+            class="navbar navbar-expand-lg bg-body-tertiary rounded pt-3 shadow"
+          >
+            <div class="container-fluid">
+              <a class="navbar-brand" href="#">Social Site</a>
+              <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+              >
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                  <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#"
+                      >Home</a
+                    >
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">Profile</a>
+                  </li>
+                </ul>
+                <div class="d-flex" id="loginDiv">
+                  <button
+                    class="btn btn-outline-success me-3"
+                    data-bs-toggle="modal"
+                    data-bs-target="#login-model"
+                  >
+                    Login
+                  </button>
+                  <button
+                    class="btn btn-outline-success"
+                    data-bs-toggle="modal"
+                    data-bs-target="#rigester-model"
+                  >
+                    Register
+                  </button>
+                </div>
+                <div class="d-flex" id="logoutDiv">
+                  <div class="me-2" id="userDiv"></div>
+                  <button
+                    class="btn btn-outline-danger"
+                    onclick="logOut()"
+                    id="logoutBtn"
+                  >
+                    Log out
+                  </button>
+                </div>
+              </div>
+            </div>
+          </nav>
+        </div>
+      </div>
+    </div>
+    <!-- end nav bar -->
+    <!-- add post btn  -->
+    <button
+      type="button"
+      class="btn btn-primary btn-lg rounded-circle position-fixed fw-bold fs-2 text-center justify-content-center align-items-center"
+      style="z-index: 9999; bottom: 5%; right: 7%; width: 63px; height: 63px"
+      id="addPostBtn"
+      data-bs-toggle="modal"
+      data-bs-target="#add-post-model"
+    >
+      +
+    </button>
+    <!-- add post btn  -->
+    <!-- start main content -->
+    <div class="container mt-5">
+      <div class="d-flex justify-content-center align-items-center">
+        <div class="col-10">
+          <div id="posts">
+            <div class="card shadow mb-5">
+              <div class="card-header bg-body-secondary">
+                <img
+                  src="Profile-imgs/user.png"
+                  alt=""
+                  class="border border-3 rounded-circle"
+                  style="width: 20px; height: 20px"
+                />
+                <span class="fw-bold ms-2">@OmerBashry</span>
+              </div>
+              <div class="card-body">
+                <img
+                  src="Post-imgs/4k-g7d2d4af7f_1920.jpg"
+                  alt=""
+                  class="rounded img-fluid"
+                />
+                <span class="text-black-50 fw-bold">2 min ago</span>
+                <h5 class="fw-bold mt-3">Nature Photo</h5>
+                <p class="mt-0">
+                  Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+                  Dolore, debitis! Nesciunt.
+                </p>
+                <hr />
+                <div class="comments">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    class="bi bi-pen"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001zm-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708l-1.585-1.585z"
+                    />
+                  </svg>
+                  <span class="ms-2">(3) Comments </span>
+                </div>
+              </div>
+            </div>
+            <div class="card shadow mb-5">
+              <div class="card-header bg-body-secondary">
+                <img
+                  src="Profile-imgs/user.png"
+                  alt=""
+                  class="border border-3 rounded-circle"
+                />
+                <span class="fw-bold ms-2">@OmerBashry</span>
+              </div>
+              <div class="card-body">
+                <img
+                  src="Post-imgs/4k-g7d2d4af7f_1920.jpg"
+                  alt=""
+                  class="rounded img-fluid"
+                />
+                <span class="text-black-50 fw-bold">2 min ago</span>
+                <h5 class="fw-bold mt-3">Nature Photo</h5>
+                <p class="mt-0">
+                  Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+                  Dolore, debitis! Nesciunt.
+                </p>
+                <hr />
+                <div class="comments">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    class="bi bi-pen"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001zm-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708l-1.585-1.585z"
+                    />
+                  </svg>
+                  <span class="ms-2">(3) Comments</span>
+                </div>
+              </div>
+            </div>
+            <div class="card shadow mb-5">
+              <div class="card-header bg-body-secondary">
+                <img
+                  src="Profile-imgs/user.png"
+                  alt=""
+                  class="border border-3 rounded-circle"
+                />
+                <span class="fw-bold ms-2">@OmerBashry</span>
+              </div>
+              <div class="card-body">
+                <img
+                  src="Post-imgs/4k-g7d2d4af7f_1920.jpg"
+                  alt=""
+                  class="rounded img-fluid"
+                />
+                <span class="text-black-50 fw-bold">2 min ago</span>
+                <h5 class="fw-bold mt-3">Nature Photo</h5>
+                <p class="mt-0">
+                  Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+                  Dolore, debitis! Nesciunt.
+                </p>
+                <hr />
+                <div class="comments">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    class="bi bi-pen"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001zm-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708l-1.585-1.585z"
+                    />
+                  </svg>
+                  <span class="ms-2">(3) Comments</span>
+                </div>
+              </div>
+            </div>
+            <div class="card shadow mb-5">
+              <div class="card-header bg-body-secondary">
+                <img
+                  src="Profile-imgs/user.png"
+                  alt=""
+                  class="border border-3 rounded-circle"
+                />
+                <span class="fw-bold ms-2">@OmerBashry</span>
+              </div>
+              <div class="card-body">
+                <img
+                  src="Post-imgs/4k-g7d2d4af7f_1920.jpg"
+                  alt=""
+                  class="rounded img-fluid"
+                />
+                <span class="text-black-50 fw-bold">2 min ago</span>
+                <h5 class="fw-bold mt-3">Nature Photo</h5>
+                <p class="mt-0">
+                  Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+                  Dolore, debitis! Nesciunt.
+                </p>
+                <hr />
+                <div class="comments">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    class="bi bi-pen"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001zm-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708l-1.585-1.585z"
+                    />
+                  </svg>
+                  <span class="ms-2">(3) Comments</span>
+                </div>
+              </div>
+            </div>
+            <div class="card shadow mb-5">
+              <div class="card-header bg-body-secondary">
+                <img
+                  src="Profile-imgs/user.png"
+                  alt=""
+                  class="border border-3 rounded-circle"
+                />
+                <span class="fw-bold ms-2">@OmerBashry</span>
+              </div>
+              <div class="card-body">
+                <img
+                  src="Post-imgs/4k-g7d2d4af7f_1920.jpg"
+                  alt=""
+                  class="rounded img-fluid"
+                />
+                <span class="text-black-50 fw-bold">2 min ago</span>
+                <h5 class="fw-bold mt-3">Nature Photo</h5>
+                <p class="mt-0">
+                  Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+                  Dolore, debitis! Nesciunt.
+                </p>
+                <hr />
+                <div class="comments">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    class="bi bi-pen"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001zm-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708l-1.585-1.585z"
+                    />
+                  </svg>
+                  <span class="ms-2">(3) Comments</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- end main content -->
+    <script src="social.js"></script>
+  </body>
+</html>
