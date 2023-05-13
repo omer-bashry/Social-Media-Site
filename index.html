@@ -245,7 +245,7 @@
             class="navbar navbar-expand-lg bg-body-tertiary rounded pt-3 shadow"
           >
             <div class="container-fluid">
-              <a class="navbar-brand" href="#">Social Site</a>
+              <a class="navbar-brand" href="index.html">Social Site</a>
               <button
                 class="navbar-toggler"
                 type="button"
@@ -305,7 +305,7 @@
     <button
       type="button"
       class="btn btn-primary btn-lg rounded-circle position-fixed fw-bold fs-2 text-center justify-content-center align-items-center"
-      style="z-index: 9999; bottom: 5%; right: 7%; width: 63px; height: 63px"
+      style="z-index: 9999; bottom: 5%; right: 5%; width: 63px; height: 63px"
       id="addPostBtn"
       data-bs-toggle="modal"
       data-bs-target="#add-post-model"
@@ -521,4 +521,38 @@
     <!-- end main content -->
     <script src="social.js"></script>
   </body>
+  <script>
+    function postClicked(id) {
+      window.location = `postDetails.html?postId=${id}`;
+    }
+    function CreataePostClicked() {
+      let title = document.getElementById("post-title-input").value;
+      let body = document.getElementById("post-body-input").value;
+      let image = document.getElementById("post-image-input").files[0];
+      let token = localStorage.getItem("token");
+      let url = `${baseUrl}/posts`;
+      let formdata = new FormData();
+      formdata.append("title", title);
+      formdata.append("body", body);
+      formdata.append("image", image);
+      let headers = {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      };
+      axios
+        .post(url, formdata, {
+          headers: headers,
+        })
+        .then((response) => {
+          let model = document.getElementById("add-post-model");
+          let modelInst = bootstrap.Modal.getInstance(model);
+          modelInst.hide();
+          sucssecAlert("New Post Created Successfully!!", "success");
+          getPosts();
+        })
+        .catch((error) => {
+          sucssecAlert(error.response.data.message, "danger");
+        });
+    }
+  </script>
 </html>

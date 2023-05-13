@@ -1,12 +1,25 @@
 let baseUrl = "https://tarmeezacademy.com/api/v1";
 
-function getPosts() {
+let currentPage = 1;
+let lastPage = 1;
+window.addEventListener("scroll", () => {
+  const endOFPage =
+    window.scrollY > document.body.offsetHeight - window.outerHeight;
+  if (endOFPage && currentPage <= lastPage) {
+    currentPage++;
+    getPosts(false, currentPage);
+  }
+});
+function getPosts(reload = true, page = 1) {
   axios
-    .get(`${baseUrl}/posts`)
+    .get(`${baseUrl}/posts?limit=4&page=${page}`)
     .then(function (response) {
-      let posts = response.data.data;
+      lastPage = response.data.meta.last_page;
       let postsDiv = document.getElementById("posts");
-      postsDiv.innerHTML = "";
+      if (reload) {
+        postsDiv.innerHTML = "";
+      }
+      let posts = response.data.data;
       for (post of posts) {
         let postTitle = "";
         if (post.title != null) {
@@ -19,7 +32,7 @@ function getPosts() {
           userProfile = "Profile-imgs/user.png";
         }
         let card = `            
-        <div class="card shadow mb-5">
+        <div class="card shadow mb-5" onclick="postClicked(${post.id})" style="cursor: pointer;">
               <div class="card-header bg-body-secondary">
                 <img
                   src="${userProfile}"
@@ -75,41 +88,15 @@ function getPosts() {
       }
     })
     .catch(function (error) {
-      sucssecAlert(error.response.data.message, "danger");
+      if (document.getElementById("posts") != null) {
+        sucssecAlert("Network error", "danger");
+      }
     });
 }
 
 getPosts();
 
-function CreataePostClicked() {
-  let title = document.getElementById("post-title-input").value;
-  let body = document.getElementById("post-body-input").value;
-  let image = document.getElementById("post-image-input").files[0];
-  let token = localStorage.getItem("token");
-  let url = `${baseUrl}/posts`;
-  let formdata = new FormData();
-  formdata.append("title", title);
-  formdata.append("body", body);
-  formdata.append("image", image);
-  let headers = {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "multipart/form-data",
-  };
-  axios
-    .post(url, formdata, {
-      headers: headers,
-    })
-    .then((response) => {
-      let model = document.getElementById("add-post-model");
-      let modelInst = bootstrap.Modal.getInstance(model);
-      modelInst.hide();
-      sucssecAlert("New Post Created Successfully!!", "success");
-      getPosts();
-    })
-    .catch((error) => {
-      sucssecAlert(error.response.data.message, "danger");
-    });
-}
+
 
 function loginClicked() {
   let username = document.getElementById("usaername-input").value;
@@ -180,14 +167,18 @@ function updateUi() {
   let logoutDiv = document.getElementById("logoutDiv");
   let addPostBtn = document.getElementById("addPostBtn");
   if (localStorage.getItem("token") != null) {
+    if (addPostBtn != null) {
+      addPostBtn.style.setProperty("display", "flex", "important");
+    }
     loginDiv.style.setProperty("display", "none", "important");
     logoutDiv.style.setProperty("display", "flex", "important");
-    addPostBtn.style.setProperty("display", "flex", "important");
     setupUser();
   } else {
+    if (addPostBtn != null) {
+      addPostBtn.style.setProperty("display", "none", "important");
+    }
     loginDiv.style.setProperty("display", "flex", "important");
     logoutDiv.style.setProperty("display", "none", "important");
-    addPostBtn.style.setProperty("display", "none", "important");
   }
 }
 updateUi();
