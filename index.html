@@ -17,8 +17,8 @@
     <!-- Start Alerts -->
     <div
       id="SuccessAlertDiv"
-      class="m-auto w-75 w-md-50 position-relative"
-      style="z-index: 9999"
+      class="m-auto w-75 w-md-50"
+      style="z-index: 9999; position: fixed; left: 15%"
     ></div>
     <!-- End Alerts -->
     <!-- start modals -->
@@ -181,7 +181,7 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">
+            <h1 class="modal-title fs-5" id="modal-header">
               Create A New Post
             </h1>
             <button
@@ -198,6 +198,7 @@
                   >Title:</label
                 >
                 <input type="text" class="form-control" id="post-title-input" />
+                <input type="hidden" id="post-id-input" value="" />
               </div>
               <div class="mb-3">
                 <label for="message-text" class="col-form-label">Body:</label>
@@ -227,7 +228,7 @@
               type="button"
               class="btn btn-primary"
               onclick="CreataePostClicked()"
-              id="loginBtn"
+              id="AddPostLoginBtn"
             >
               Create
             </button>
@@ -236,6 +237,50 @@
       </div>
     </div>
     <!-- end create post model  -->
+    <!-- Start Delete Modal -->
+    <div
+      class="modal fade"
+      id="DeleteModal"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">
+              Are You Sure?
+            </h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            You and other users will not be able to view this post again ...
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              class="btn btn-danger"
+              onclick="submitDelete()"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End Delete Modal -->
     <!-- end modals -->
     <!-- start nav bar -->
     <div class="container">
@@ -307,8 +352,7 @@
       class="btn btn-primary btn-lg rounded-circle position-fixed fw-bold fs-2 text-center justify-content-center align-items-center"
       style="z-index: 9999; bottom: 5%; right: 5%; width: 63px; height: 63px"
       id="addPostBtn"
-      data-bs-toggle="modal"
-      data-bs-target="#add-post-model"
+      onclick="AddPostClicked()"
     >
       +
     </button>
@@ -526,11 +570,13 @@
       window.location = `postDetails.html?postId=${id}`;
     }
     function CreataePostClicked() {
+      let postId = document.getElementById("post-id-input").value;
+      let isCreat = postId == null || postId == "";
       let title = document.getElementById("post-title-input").value;
       let body = document.getElementById("post-body-input").value;
       let image = document.getElementById("post-image-input").files[0];
       let token = localStorage.getItem("token");
-      let url = `${baseUrl}/posts`;
+      let url = "";
       let formdata = new FormData();
       formdata.append("title", title);
       formdata.append("body", body);
@@ -539,6 +585,12 @@
         Authorization: `Bearer ${token}`,
         "Content-Type": "multipart/form-data",
       };
+      if (isCreat) {
+        url = `${baseUrl}/posts`;
+      } else {
+        formdata.append("_method", "put");
+        url = `${baseUrl}/posts/${postId}`;
+      }
       axios
         .post(url, formdata, {
           headers: headers,
@@ -547,7 +599,64 @@
           let model = document.getElementById("add-post-model");
           let modelInst = bootstrap.Modal.getInstance(model);
           modelInst.hide();
-          sucssecAlert("New Post Created Successfully!!", "success");
+          if (isCreat) {
+            sucssecAlert("New Post Created Successfully!!", "success");
+          } else {
+            sucssecAlert("Post Has Been Updated Successfully!!", "success");
+          }
+          getPosts();
+        })
+        .catch((error) => {
+          sucssecAlert(error.response.data.message, "danger");
+        });
+    }
+    function editBtnCliked(postObj) {
+      let post = JSON.parse(decodeURIComponent(postObj));
+      let postModal = new bootstrap.Modal(
+        document.getElementById("add-post-model")
+      );
+      postModal.toggle();
+      document.getElementById("modal-header").innerHTML = "Edit Post";
+      document.getElementById("AddPostLoginBtn").innerHTML = "Edit";
+      document.getElementById("post-title-input").value = post.title;
+      document.getElementById("post-body-input").value = post.body;
+      document.getElementById("post-id-input").value = post.id;
+    }
+    function AddPostClicked() {
+      let postModal = new bootstrap.Modal(
+        document.getElementById("add-post-model")
+      );
+      postModal.toggle();
+      document.getElementById("modal-header").innerHTML = "Create A New Post";
+      document.getElementById("AddPostLoginBtn").innerHTML = "Create";
+      document.getElementById("post-title-input").value = "";
+      document.getElementById("post-body-input").value = "";
+      document.getElementById("post-id-input").value = "";
+    }
+    let deletId = 1;
+    function DeletBtnClicked(id) {
+      let postModal = new bootstrap.Modal(
+        document.getElementById("DeleteModal")
+      );
+      postModal.toggle();
+      deletId = id;
+    }
+    function submitDelete() {
+      let url = `${baseUrl}/posts/${deletId}`;
+      let token = localStorage.getItem("token");
+      let headers = {
+        authorization: `Bearer ${token}`,
+      };
+      console.log(token);
+      axios
+        .delete(url, {
+          headers: headers,
+        })
+        .then((response) => {
+          let model = document.getElementById("DeleteModal");
+          let modelInst = bootstrap.Modal.getInstance(model);
+          modelInst.hide();
+          sucssecAlert("Post Has Been Deleted Successfully!!", "success");
           getPosts();
         })
         .catch((error) => {

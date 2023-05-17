@@ -31,8 +31,24 @@ function getPosts(reload = true, page = 1) {
         } else {
           userProfile = "Profile-imgs/user.png";
         }
+        let userString = localStorage.getItem("user");
+        let user = JSON.parse(userString);
+        let myPost = user != null && user.id == post.author.id;
+        let buttonContent = ``;
+        if (myPost) {
+          buttonContent = `
+                <div id="upadteAndDeleteDiv" style="float: right; margin-top: 10px;">
+                  <button type="button" class="btn btn-outline-primary btn-sm" onclick = "editBtnCliked('${encodeURIComponent(
+                    JSON.stringify(post)
+                  )}')">Edit</button>
+                  <button type="button" class="btn btn-outline-danger btn-sm" onclick = "DeletBtnClicked(${
+                    post.id
+                  })">Delete</button>
+                </div>
+          `;
+        }
         let card = `            
-        <div class="card shadow mb-5" onclick="postClicked(${post.id})" style="cursor: pointer;">
+        <div class="card shadow mb-5">
               <div class="card-header bg-body-secondary">
                 <img
                   src="${userProfile}"
@@ -41,8 +57,9 @@ function getPosts(reload = true, page = 1) {
                   style="width: 50px; height: 50px"
                 />
                 <span class="fw-bold ms-2">${post.author.name}</span>
+                ${buttonContent}
               </div>
-              <div class="card-body">
+              <div class="card-body" onclick="postClicked(${post.id})" style="cursor: pointer;">
                 <img
                   src="${post.image}"
                   alt=""
@@ -96,8 +113,6 @@ function getPosts(reload = true, page = 1) {
 
 getPosts();
 
-
-
 function loginClicked() {
   let username = document.getElementById("usaername-input").value;
   let password = document.getElementById("password-input").value;
@@ -116,6 +131,9 @@ function loginClicked() {
       modelInst.hide();
       sucssecAlert("Logged in successfully!!", "success");
       updateUi();
+      setTimeout(() => {
+        location.reload();
+      }, 2000);
     })
     .catch(function (error) {
       sucssecAlert(error.response.data.message, "danger");
@@ -160,6 +178,9 @@ function logOut() {
   localStorage.clear();
   sucssecAlert("Logged out successfully!!", "success");
   updateUi();
+  setTimeout(() => {
+    location.reload();
+  }, 2000);
 }
 
 function updateUi() {
