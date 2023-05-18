@@ -2,14 +2,6 @@ let baseUrl = "https://tarmeezacademy.com/api/v1";
 
 let currentPage = 1;
 let lastPage = 1;
-window.addEventListener("scroll", () => {
-  const endOFPage =
-    window.scrollY > document.body.offsetHeight - window.outerHeight;
-  if (endOFPage && currentPage <= lastPage) {
-    currentPage++;
-    getPosts(false, currentPage);
-  }
-});
 function getPosts(reload = true, page = 1) {
   axios
     .get(`${baseUrl}/posts?limit=4&page=${page}`)
@@ -50,13 +42,15 @@ function getPosts(reload = true, page = 1) {
         let card = `            
         <div class="card shadow mb-5">
               <div class="card-header bg-body-secondary">
-                <img
-                  src="${userProfile}"
-                  alt=""
-                  class="border border-3 rounded-circle"
-                  style="width: 50px; height: 50px"
-                />
-                <span class="fw-bold ms-2">${post.author.name}</span>
+                <span id="userDetails" style="cursor: pointer;" onclick="userDivClicked(${post.author.id})">
+                  <img
+                    src="${userProfile}"
+                    alt=""
+                    class="border border-3 rounded-circle"
+                    style="width: 50px; height: 50px"
+                  />
+                  <span class="fw-bold ms-2">${post.author.name}</span>
+                </span>
                 ${buttonContent}
               </div>
               <div class="card-body" onclick="postClicked(${post.id})" style="cursor: pointer;">
@@ -96,7 +90,6 @@ function getPosts(reload = true, page = 1) {
         let currentPostTagID = document.getElementById(postId);
         currentPostTagID.innerHTML = "";
         for (tag of post.tags) {
-          console.log(tag.name);
           let tagContenet = `
           <button class="btn btn-sm rounded-5" style="background-color: gray; color: white;">${tag.name}</button>
           `;
@@ -110,8 +103,6 @@ function getPosts(reload = true, page = 1) {
       }
     });
 }
-
-getPosts();
 
 function loginClicked() {
   let username = document.getElementById("usaername-input").value;
@@ -234,7 +225,114 @@ function sucssecAlert(message, type) {
   };
   appendAlert(message, type);
 }
-
+function postClicked(id) {
+  window.location = `postDetails.html?postId=${id}`;
+}
+function CreataePostClicked() {
+  let postId = document.getElementById("post-id-input").value;
+  let isCreat = postId == null || postId == "";
+  let title = document.getElementById("post-title-input").value;
+  let body = document.getElementById("post-body-input").value;
+  let image = document.getElementById("post-image-input").files[0];
+  let token = localStorage.getItem("token");
+  let url = "";
+  let formdata = new FormData();
+  formdata.append("title", title);
+  formdata.append("body", body);
+  formdata.append("image", image);
+  let headers = {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "multipart/form-data",
+  };
+  if (isCreat) {
+    url = `${baseUrl}/posts`;
+  } else {
+    formdata.append("_method", "put");
+    url = `${baseUrl}/posts/${postId}`;
+  }
+  axios
+    .post(url, formdata, {
+      headers: headers,
+    })
+    .then((response) => {
+      let model = document.getElementById("add-post-model");
+      let modelInst = bootstrap.Modal.getInstance(model);
+      modelInst.hide();
+      if (isCreat) {
+        sucssecAlert("New Post Created Successfully!!", "success");
+      } else {
+        sucssecAlert("Post Has Been Updated Successfully!!", "success");
+      }
+      getPosts();
+    })
+    .catch((error) => {
+      sucssecAlert(error.response.data.message, "danger");
+    });
+}
+function editBtnCliked(postObj) {
+  let post = JSON.parse(decodeURIComponent(postObj));
+  let postModal = new bootstrap.Modal(
+    document.getElementById("add-post-model")
+  );
+  postModal.toggle();
+  document.getElementById("modal-header").innerHTML = "Edit Post";
+  document.getElementById("AddPostLoginBtn").innerHTML = "Edit";
+  document.getElementById("post-title-input").value = post.title;
+  document.getElementById("post-body-input").value = post.body;
+  document.getElementById("post-id-input").value = post.id;
+}
+function AddPostClicked() {
+  let postModal = new bootstrap.Modal(
+    document.getElementById("add-post-model")
+  );
+  postModal.toggle();
+  document.getElementById("modal-header").innerHTML = "Create A New Post";
+  document.getElementById("AddPostLoginBtn").innerHTML = "Create";
+  document.getElementById("post-title-input").value = "";
+  document.getElementById("post-body-input").value = "";
+  document.getElementById("post-id-input").value = "";
+}
+let deletId = 1;
+function DeletBtnClicked(id) {
+  let postModal = new bootstrap.Modal(document.getElementById("DeleteModal"));
+  postModal.toggle();
+  deletId = id;
+}
+function submitDelete() {
+  let url = `${baseUrl}/posts/${deletId}`;
+  let token = localStorage.getItem("token");
+  let headers = {
+    authorization: `Bearer ${token}`,
+  };
+  console.log(token);
+  axios
+    .delete(url, {
+      headers: headers,
+    })
+    .then((response) => {
+      let model = document.getElementById("DeleteModal");
+      let modelInst = bootstrap.Modal.getInstance(model);
+      modelInst.hide();
+      sucssecAlert("Post Has Been Deleted Successfully!!", "success");
+      getPosts();
+    })
+    .catch((error) => {
+      sucssecAlert(error.response.data.message, "danger");
+    });
+}
+function userDivClicked(id) {
+  window.location = `profile.html?userId=${id}`;
+}
+function profileTapClicked() {
+  let strinUser = localStorage.getItem("user");
+  let user = JSON.parse(strinUser);
+  if (user != null) {
+    let id = user.id;
+    window.location = `profile.html?userId=${id}`;
+  } else {
+    sucssecAlert("You Must Login First To See Your Profile", "danger");
+  }
+}
 // test github
 // test github
 // post tow id = 580
