@@ -13,5 +13,3 @@ HTML, CSS, JAVASCIPT, BOOTSTRAP, API.
 
 ## live Demo : 
 ### https://lambent-otter-e9a810.netlify.app/
-ا
-افةم
