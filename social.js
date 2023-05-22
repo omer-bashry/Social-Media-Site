@@ -3,8 +3,9 @@ let baseUrl = "https://tarmeezacademy.com/api/v1";
 let currentPage = 1;
 let lastPage = 1;
 function getPosts(reload = true, page = 1) {
+  setLoader(true);
   axios
-    .get(`${baseUrl}/posts?limit=4&page=${page}`)
+    .get(`${baseUrl}/posts?limit=8&page=${page}`)
     .then(function (response) {
       lastPage = response.data.meta.last_page;
       let postsDiv = document.getElementById("posts");
@@ -101,6 +102,9 @@ function getPosts(reload = true, page = 1) {
       if (document.getElementById("posts") != null) {
         sucssecAlert("Network error", "danger");
       }
+    })
+    .finally(() => {
+      setLoader(false);
     });
 }
 
@@ -112,6 +116,7 @@ function loginClicked() {
     username: username,
     password: password,
   };
+  setLoader(true);
   axios
     .post(url, body)
     .then((response) => {
@@ -128,6 +133,9 @@ function loginClicked() {
     })
     .catch(function (error) {
       sucssecAlert(error.response.data.message, "danger");
+    })
+    .finally(() => {
+      setLoader(false);
     });
 }
 
@@ -147,6 +155,7 @@ function rigesterClicked() {
     Authorization: `Bearer ${token}`,
     "Content-Type": "multipart/form-data",
   };
+  setLoader(true);
   axios
     .post(url, formData, {
       headers: headers,
@@ -162,6 +171,9 @@ function rigesterClicked() {
     })
     .catch(function (error) {
       sucssecAlert(error.response.data.message, "danger");
+    })
+    .finally(() => {
+      setLoader(false);
     });
 }
 
@@ -250,6 +262,7 @@ function CreataePostClicked() {
     formdata.append("_method", "put");
     url = `${baseUrl}/posts/${postId}`;
   }
+  setLoader(true);
   axios
     .post(url, formdata, {
       headers: headers,
@@ -267,6 +280,9 @@ function CreataePostClicked() {
     })
     .catch((error) => {
       sucssecAlert(error.response.data.message, "danger");
+    })
+    .finally(() => {
+      setLoader(false);
     });
 }
 function editBtnCliked(postObj) {
@@ -305,6 +321,7 @@ function submitDelete() {
     authorization: `Bearer ${token}`,
   };
   console.log(token);
+  setLoader(true);
   axios
     .delete(url, {
       headers: headers,
@@ -318,6 +335,9 @@ function submitDelete() {
     })
     .catch((error) => {
       sucssecAlert(error.response.data.message, "danger");
+    })
+    .finally(() => {
+      setLoader(false);
     });
 }
 function userDivClicked(id) {
@@ -331,6 +351,14 @@ function profileTapClicked() {
     window.location = `profile.html?userId=${id}`;
   } else {
     sucssecAlert("You Must Login First To See Your Profile", "danger");
+  }
+}
+getPosts();
+function setLoader(run = true) {
+  if (run) {
+    document.getElementById("loader").style.display = "flex";
+  } else {
+    document.getElementById("loader").style.display = "none";
   }
 }
 // test github

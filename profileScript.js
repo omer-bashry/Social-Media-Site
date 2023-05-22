@@ -3,6 +3,7 @@ let userId = urlPrams.get("userId");
 getUserInfo();
 getUserPosts();
 function getUserInfo() {
+  setLoader(true);
   axios
     .get(`${baseUrl}/users/${userId}`)
     .then((response) => {
@@ -22,9 +23,13 @@ function getUserInfo() {
     })
     .catch((error) => {
       sucssecAlert(error.response.data.message, "danger");
+    })
+    .finally(() => {
+      setLoader(false);
     });
 }
 function getUserPosts() {
+  setLoader(true);
   axios
     .get(`${baseUrl}/users/${userId}/posts`)
     .then((response) => {
@@ -118,5 +123,8 @@ function getUserPosts() {
       if (document.getElementById("posts") != null) {
         sucssecAlert("Network error", "danger");
       }
+    })
+    .finally(() => {
+      setLoader(false);
     });
 }

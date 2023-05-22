@@ -13,7 +13,56 @@
       href="./node_modules/bootstrap/dist/css/bootstrap.min.css"
     />
   </head>
+  <style>
+    .lds-dual-ring {
+      display: inline-block;
+      width: 80px;
+      height: 80px;
+    }
+    .lds-dual-ring:after {
+      content: " ";
+      display: block;
+      width: 64px;
+      height: 64px;
+      margin: 8px;
+      border-radius: 50%;
+      border: 6px solid #fff;
+      border-color: #fff transparent #fff transparent;
+      animation: lds-dual-ring 1.2s linear infinite;
+    }
+    @keyframes lds-dual-ring {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
   <body style="background-color: #f0ecff">
+    <!-- satrt loader  -->
+    <div
+      id="loader"
+      style="
+        z-index: 99999;
+        background-color: #000000ab;
+        width: 100px;
+        height: 100px;
+        border-radius: 20px;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        margin: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      "
+    >
+      <div class="lds-dual-ring"></div>
+    </div>
+    <!-- end lodaer  -->
     <!-- Start Alerts -->
     <div
       id="SuccessAlertDiv"
@@ -404,6 +453,7 @@
       let urlPrams = new URLSearchParams(window.location.search);
       let id = urlPrams.get("postId");
       postId = id;
+      setLoader(true);
       axios
         .get(`https://tarmeezacademy.com/api/v1/posts/${id}`)
         .then((response) => {
@@ -521,6 +571,9 @@
                 </div>
         `;
           postDiv.innerHTML = postContent;
+        })
+        .finally(() => {
+          setLoader(false);
         });
     }
     showPost();
@@ -534,6 +587,7 @@
       let headers = {
         Authorization: `Bearer ${token}`,
       };
+      setLoader(true);
       axios
         .post(url, body, {
           headers: headers,
@@ -550,7 +604,17 @@
           } else {
             sucssecAlert(`${error.response.data.message}!!`, "danger");
           }
+        })
+        .finally(() => {
+          setLoader(false);
         });
+    }
+    function setLoader(run = true) {
+      if (run) {
+        document.getElementById("loader").style.display = "flex";
+      } else {
+        document.getElementById("loader").style.display = "none";
+      }
     }
   </script>
 </html>
